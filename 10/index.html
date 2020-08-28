@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events in React JS</title>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+    <div id="react-container"></div>
+
+    <script type="text/babel">
+        
+        class Note extends React.Component {
+            
+            constructor(props) {
+                super(props);
+                this.state = {
+                    editing: false,
+                }
+            }
+
+            edit = () => {
+                this.setState( {editing: true} )
+            }
+
+            save = () => {
+                this.props.onChange(this.refs.newText.value, this.props.id)
+                this.setState({editing: false})
+            }
+
+            delete = (id) => {
+                this.props.onRemove(this.props.id)
+            }
+
+            renderForm = () => {
+                return(
+                    <div class="note">
+                        <textarea class="editbox" ref="newText"></textarea>
+                        <button onClick={this.save}>Save</button>
+                    </div>
+                )
+            }
+
+            renderDisplay = () => {
+                return(
+                    <div className="note">
+                        <p>{this.props.children}</p>
+                        <span>
+                            <button onClick={this.edit}>Edit</button>
+                            <button onClick={this.delete}>X</button>
+                        </span>   
+                    </div>
+                )
+            }
+
+            render() {
+                if(this.state.editing) {
+                    return this.renderForm()
+                } else {
+                    return this.renderDisplay()
+                }
+            }
+        }
+    
+        ReactDOM.render(<Note>Hello World!</Note>, document.getElementById('react-container'))
+        
+        class Board extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    notes : [
+                        {id: 0, note: "Call Rahul"},
+                        {id: 1, note: "Make Prototype"},
+                        {id: 2, note: "Submit Project" },
+                        {id: 3, note: "Send Email to Rahul"}
+                    ],
+                }
+            }
+
+            update = ( newText, id ) => {
+                let notes = this.state.notes.map(note => (note.id !== id) 
+                    ? note 
+                    :   {
+                            ...note,
+                            note: newText
+                        }
+                )
+                this.setState({notes})
+            } 
+
+            remove = (id) => {
+                let notes = this.state.notes.filter(note => note.id !== id)
+                this.setState({notes})
+            }
+
+            eachNote = (note) => {
+                return( <Note 
+                            key={note.id}
+                            id={note.id}
+                            onChange={this.update}
+                            onRemove={this.remove}
+                            >{note.note}
+                        </Note> 
+            )}
+
+            render() {
+                return(
+                    <div className="board">
+                        {this.state.notes.map(this.eachNote)}
+                    </div>
+                )
+            }
+        }
+
+        ReactDOM.render(<Board count={10}/>, document.getElementById('react-container'))
+    </script>
+
+
+</body>
+</html>
