@@ -14,15 +14,21 @@
 
     <script type="text/babel">
     
-    const MyComponent = () => {
-        return  <div>
-                        <h1>Hello World!</h1>
-                        <p>Welcome to First React Component</p>
+    class MyComponent extends React.Component {
+        render() {
+            return  <div>
+                        <h1>{this.props.text}</h1>
+                        <p>{this.props.children}</p>
                     </div>
-    }
-    // this is an example of a stateless component
 
-    ReactDOM.render( <MyComponent/>, document.getElementById('react-container'))
+        }
+    }
+
+    ReactDOM.render( <div>
+        <MyComponent text="Bye World!">Message One</MyComponent>
+        <MyComponent text="Hello World!">Message Two</MyComponent>
+        <MyComponent text="Welcome World!">Message Three</MyComponent>
+    </div>, document.getElementById('react-container'))
     </script>
     
 </body>
