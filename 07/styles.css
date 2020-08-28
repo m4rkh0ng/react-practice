@@ -6,3 +6,9 @@
     border: 1px solid orange;
     box-shadow: 2px 6px 12px rgba(0,0,0,0.2);
 }
+
+.editbox {
+    width: 90%;
+    margin: 0 auto;
+    height: 80%;
+}
