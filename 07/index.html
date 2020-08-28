@@ -29,7 +29,9 @@
             }
 
             save = () => {
-                this.setState( {editing: false} )
+                let val = this.refs.newText.value;
+                alert( "The value will be stored as: " + val);
+                this.setState( {editing: false} ); 
             }
 
             delete = () => {
@@ -39,7 +41,7 @@
             renderForm = () => {
                 return(
                     <div class="note">
-                        <textarea class="editbox"></textarea>
+                        <textarea class="editbox" ref="newText"></textarea>
                         <button onClick={this.save}>Save</button>
                     </div>
                 )
