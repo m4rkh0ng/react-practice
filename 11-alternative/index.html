@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events in React JS</title>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+    <div id="react-container"></div>
+
+    <script type="text/babel">
+        
+        class Note extends React.Component {
+            
+            constructor(props) {
+                super(props);
+                this.state = {
+                    editing: true,
+                }
+            }
+
+            edit = () => {
+                // this is set to true instead of false when we first see the note being added from the add button
+                // this will save us a click per note; generally when adding a note, you're not looking to add a blank note
+                // this should lead to a more efficient user experience
+                this.setState( {editing: true} )
+            }
+
+            save = () => {
+                this.props.onChange(this.refs.newText.value, this.props.id)
+                this.setState({editing: false})
+            }
+
+            delete = (id) => {
+                this.props.onRemove(this.props.id)
+            }
+
+            // alternative implementation strategy:
+            // change default state for Note component to have editing: true
+            // then when add button is pressed, we have the Save and Delete buttons available, as well as the textarea to immediately start writing without having to 
+            
+            // the delete button is included if in the case that the user accidentally adds a note but didn't want to, thus removing it
+            renderForm = () => {
+                return(
+                    <div className="note">
+                        <textarea className="editbox" ref="newText"></textarea>
+                        <button onClick={this.save}>Save</button>
+                        <button onClick={this.delete}>X</button>
+                    </div>
+                )
+            }
+
+            renderDisplay = () => {
+                return(
+                    <div className="note">
+                        <p>{this.props.children}</p>
+                        <span>
+                            <button onClick={this.edit}>Edit</button>
+                            <button onClick={this.delete}>X</button>
+                        </span>   
+                    </div>
+                )
+            }
+
+            render() {
+                if(this.state.editing) {
+                    return this.renderForm()
+                } else {
+                    return this.renderDisplay()
+                }
+            }
+        }
+    
+        ReactDOM.render(<Note>Hello World!</Note>, document.getElementById('react-container'))
+        
+        class Board extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    notes : []
+                }
+            }
+
+            nextId = () => {
+                this.uniqueId = this.uniqueId || 0;
+                return this.uniqueId++;
+            }
+
+            add = (text) => {
+                let noteId = this.nextId();
+                let notes = [
+                    ...this.state.notes,
+                    {
+                        id: noteId,
+                        note: text,
+                        editing: false
+                    }
+                ]
+                this.setState({notes});
+            }
+
+            update = ( newText, id ) => {
+                let notes = this.state.notes.map(note => (note.id !== id) 
+                    ? note 
+                    :   {
+                            ...note,
+                            note: newText
+                        }
+                )
+                this.setState({notes})
+            } 
+
+            remove = (id) => {
+                let notes = this.state.notes.filter(note => note.id !== id)
+                this.setState({notes})
+            }
+
+            eachNote = (note) => {
+                return( <Note 
+                            key={note.id}
+                            id={note.id}
+                            onChange={this.update}
+                            onRemove={this.remove}
+                            >{note.note}
+                        </Note> 
+            )}
+
+            // alternative solution could be: when adding a note, instead of generating a blank note to then which you have to push "Edit" to actually begin typing into, you can set editing to true when this.add() is pressed and this may be a preferred behavior (compared to always having an editable field open and active all of the time)
+
+            // see above comment in Note component for reasoning
+            render() {
+                return(
+                    <div className="board">
+                        {this.state.notes.map(this.eachNote)}
+                        <button onClick={()=>this.add()}>+</button>
+                    </div>
+                )
+            }
+        }
+
+        ReactDOM.render(<Board count={10}/>, document.getElementById('react-container'))
+    </script>
+
+
+</body>
+</html>
